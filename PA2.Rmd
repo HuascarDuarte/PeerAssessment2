@@ -40,7 +40,7 @@ There is also some documentation of the database available for how some of the v
 The following code will be used to download and read the data into the `StormData`
 data frame:
 
-```{r cache=TRUE}
+```{r}
 temp <- tempfile()
 download.file("https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2", temp, method="curl")
 StormData <- read.csv(bzfile(temp, "repdata-data-StormData.csv"), stringsAsFactors = FALSE)
@@ -88,7 +88,7 @@ str(StormData)
   
   For that we will use the following code:
   
-```{r cache=TRUE}
+```{r}
 HealthImpact<-StormData[StormData$INJURIES > 0 | StormData$FATALITIES > 0, c(2, 8, 23, 24, 37)]
 
 EconomicImpact<-StormData[StormData$PROPDMG > 0 | StormData$CROPDMG > 0, c(2, 8, 25, 26, 27, 28, 37)]
