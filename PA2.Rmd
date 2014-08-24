@@ -1,4 +1,4 @@
-# Impact of Severe Weather Events in Population Health and in the Economy
+# Economic and Health Impact of Severe Weather Events in the USA
 
 Synopsis: Immediately after the title, there should be a synopsis which describes and summarizes your analysis in at most 10 complete sentences.  
 
@@ -16,83 +16,361 @@ consequences?
    
 ## Data Processing
 
-The data for this assignment come in the form of a comma-separated-value file compressed via the bzip2 algorithm to reduce its size. You can download the file from the course web site:  
+The data for this assignment come in the form of a comma-separated-value file compressed via the bzip2 algorithm to reduce its size, from the following web site:  
   
-- Storm Data [47Mb] https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2   
+- Storm Data: *https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2*   
+  
 
-
-There is also some documentation of the database available. Here you will find how some of the variables are constructed/defined.
+There is also some documentation of the database available for how some of the variables are constructed/defined: 
   
-- National Weather Service Storm Data Documentation https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf    
+- National Weather Service Storm Data Documentation: *https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf*   
   
-- National Climatic Data Center Storm Events FAQ https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2FNCDC%20Storm%20Events-FAQ%20Page.pdf 
+- National Climatic Data Center Storm Events FAQ: *https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2FNCDC%20Storm%20Events-FAQ%20Page.pdf* 
   
   
 The events in the database start in the year 1950 and end in November 2011. In the earlier years of the database there are generally fewer events recorded, most likely due to a lack of good records. More recent years should be considered more complete.
 
-There should be a section titled Data Processing which describes (in words and code) how the data were loaded into R and processed for analysis. In particular, your analysis must start from the raw CSV file containing the data. You cannot do any preprocessing outside the document. If preprocessing is time-consuming you may consider using the cache = TRUE option for certain code chunks.
 
 ### Loading the data
+  
+  
+The data for this assignment can be found at the following url as a bzip2 compressed file containing the `repdata-data-StormData.csv` file in csv file format:
 
-For this part of the assignment we will:
-
-1. Load the data (i.e. read.csv()) from the internet
-
-2. Process/transform the data (if necessary) into a format suitable for analysis
-
-   
-
-The data for this assignment can be found at the following url as a zip file containing the **activity.csv** file in csv file format:
-
-- Url: *https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip*
-
-- File: *activity.csv* 
-
-The variables included in this dataset are:
-
-- **steps**: Number of steps taking in a 5-minute interval (missing
-    values are coded as 'NA')
-
-- **date**: The date on which the measurement was taken in YYYY-MM-DD
-    format
-
-- **interval**: Identifier for the 5-minute interval in which
-    measurement was taken
+- Url: *ttps://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2*
+  
+- File: *repdata-data-StormData.csv* 
+  
     
-
-The following code will be used to download and read the data into the `activity`
+The following code will be used to download and read the data into the `StormData`
 data frame:
 
 ```{r cache=TRUE}
 temp <- tempfile()
 download.file("https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2", temp, method="curl")
-StormData <- read.csv(bzfile(temp, "repdata-data-StormData.csv"))
+StormData <- read.csv(bzfile(temp, "repdata-data-StormData.csv"), stringsAsFactors = FALSE)
 unlink(temp)
+rm(temp)
 ```
+  
+  
+### Analyzing data structure
 
-
-### Analyzing data contents
-
-Let's take a look at the structure and the first few rows in the data loaded:
+Let's take a look at the structure of the data loaded:
 
 ```{r}
-str(activity)
-
-head(activity)
+str(StormData)
 ```
 
-We notice that:
+We notice that there are 902.297 observations with 37 variables. 
+  
+>   **Not all variables are of interest in this study!** 
+  
+  We shall use only the following variables that we consider relevant to this study:
+  
+  - **BGN_DATE** (column 2): Character value with the date in which the event took place in the **MM/DD/YEAR HH:MM:SS** format. We may want to have a look at the evolution of impact in population health and economy with time or at each year.
+  
+  - **EVTYPE** (column 8): Character value with the type of the event, since we want to explore how each type of event impacts population health and economy. The official table of events is described in item 2.1.1 on page 6 of the [document describing the data](https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf).
+  
+  - **FATALITIES** and **INJURIES** (columns 23 and 24): Numeric values with the number of fatalities and injuries caused by each event, once we will measure the impact of each type of event in population health by the sum of these two variables.
+  
+  - **PROPDMG** and **CROPDMG** (columns 25 and 27): Numeric values with an estimate of the value of damages, in properties and in crops, caused by each event, once we will consider measure of the economic impact of each type of event by the sum of these two variables.
+  
+  - **PROPDMGEXP** and **CROPDMGEXP** (columns 26 and 28): Character values with an alphabetical character suffix to PROPDMG and CROPDMG  signifying the magnitude of the number, i.e., 1.55B for $1,550,000,000. Alphabetical characters used to signify magnitude include “K” for thousands, “M” for millions, and “B” for billions.
+  
+  - **REFNUM** (column 37): Numeric value with an index numner to the specific weather event, just to be able to track back to the event, if necessary.
+  
+  The remaining variables will not be used in this particular study.
+  
+  
+### Subsetting the data  
+  
+  Before we continue digging deeper in the data, we will extract from the data loaded only the rows and columns of interest.
+  
+  We will create two new data frames:
+  
+  - **HealthImpact** with data relevant for population health: **BGN_DATE** (column 2), **EVTYPE** (column 8), **FATALITIES** and **INJURIES** (columns 23 and 24)
+  
+  - **EconomicImpact** with data relevant to economic impact: **BGN_DATE** (column 2), **EVTYPE** (column 8), **PROPDMG** (column 25), **PROPDMGEXP** (columns 26), **CROPDMG** (columns 27), and **CROPDMGEXP** (columns 28)
+  
+  For that we will use the following code:
+  
+```{r cache=TRUE}
+HealthImpact<-StormData[StormData$INJURIES > 0 | StormData$FATALITIES > 0, c(2, 8, 23, 24, 37)]
 
-- the **date** variable contains the data in character format
+EconomicImpact<-StormData[StormData$PROPDMG > 0 | StormData$CROPDMG > 0, c(2, 8, 25, 26, 27, 28, 37)]
 
-- the **interval** variable contains numeric value representing the 5 minutes interval the number os steps taken was measured. 
+# Remove the big StormData file
+# rm(StormData)
+```
+  
+  Let's also adjust some of the columns:
+  
+  - The character columns for EVTYPE, PROPDMGEXP e CROPDMGEXP to factor variables
+  
+  - The BGN_DATE to date format 
+  
+```{r}
+HealthImpact$EVTYPE<-as.factor(HealthImpact$EVTYPE)
 
+EconomicImpact$EVTYPE<-as.factor(EconomicImpact$EVTYPE)
+
+EconomicImpact$PROPDMGEXP<-as.factor(EconomicImpact$PROPDMGEXP)
+
+EconomicImpact$CROPDMGEXP<-as.factor(EconomicImpact$CROPDMGEXP)
+
+HealthImpact$BGN_DATE<-as.POSIXct(strptime(HealthImpact$BGN_DATE, format = "%m/%d/%Y %H:%M:%S", tz ="GMT"))
+
+EconomicImpact$BGN_DATE<-as.POSIXct(strptime(EconomicImpact$BGN_DATE, format = "%m/%d/%Y %H:%M:%S", tz ="GMT"))
+```
+  
+### Health Impact Data
+  
+  Now let's analyze the structure and summary of the health impact subset data that will be used:
+  
+```{r}
+str(HealthImpact)
+
+summary(HealthImpact)
+```
+  
+  For the Health Impact data:
+  
+  - We now have 21.929 observations, or severe weather events, with any fatalities or injuries among the 902.297 observations.
+  
+  - These severe weather events were observed between 1950-01-03 and 2011-11-30.
+  
+  - We do not have any missing values.  
+  
+  - The EVTYPE (event type) column has 220 levels, when it should have only 48 according to the table of events in the documentation.
+  
+  
+### Event Types in Health Impact Data
+
+  Let's explore the types of events types in our Health Impact data.
+  
+```{r}
+as.data.frame(table(HealthImpact$EVTYPE))
+``` 
+  
+  We can see that we have 220 different types of events, instead of 48, because of: 
+  
+  - Mistypings
+  
+  - Use of upper and lower cases
+  
+  - Failure to use the standard
+  
+  
+  We will attempt to impprove the data by:
+  - Converting type to upper case
+  
+  - Convert to HURRICANE any event type which contains TYPHOON or HURRICANE
+  
+  - Convert to TORNADO any event type which contains TORNADO
+  
+  - Convert to LIGHTNING any event type which contains LIGHTN
+  
+  - Convert to THUNDERSTORM any event type which contains THUNDER or TSTM
+  
+  - Convert to FLOOD any event type which contains FLOOD
+  
+  - Convert to HEAT any event type which contains HEAT
+  
+  - Convert to WILDFIRE any event type which contains FIRE
+  
+  - Convert to ICE STORM any event type which contains ICE
+  
+  - Convert to COLD any event type which contains COLD
+  
+  
+```{r}
+HealthImpact$EVTYPE<-toupper(HealthImpact$EVTYPE)
+HealthImpact[grep("hurricane", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HURRICANE"
+HealthImpact[grep("typho", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HURRICANE"
+HealthImpact[grep("tornado", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"TORNADO"
+HealthImpact[grep("lightn", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"LIGHTNING"
+HealthImpact[grep("thunder", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"THUNDERSTORM"
+HealthImpact[grep("tstm", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"THUNDERSTORM"
+HealthImpact[grep("flood", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"FLOOD"
+HealthImpact[grep("fld", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"FLOOD"
+HealthImpact[grep("heat", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HEAT"
+HealthImpact[grep("fire", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"WILDFIRE"
+HealthImpact[grep("ice", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"ICE STORM"
+HealthImpact[grep("icy", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"ICE STORM"
+HealthImpact[grep("cold", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"COLD"
+HealthImpact[grep("chill", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"COLD"
+HealthImpact[grep("therm", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"COLD"
+HealthImpact[grep("low temp", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"COLD"
+HealthImpact[grep("rip cur", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"RIP CURRENT"
+HealthImpact[grep("snow", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HEAVY SNOW"
+HealthImpact[grep("warm", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HEAT"
+HealthImpact[grep("slide", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"DEBRIS FLOW"
+HealthImpact[grep("rain", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HEAVY RAIN"
+HealthImpact[grep("freez", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"FROST FREEZE"
+HealthImpact[grep("frost", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"FROST FREEZE"
+HealthImpact[grep("wind", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"STRONG/HIGH WIND"
+HealthImpact[grep("wint", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"WINTER STORM/WEATHER"
+HealthImpact[grep("hail", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HAIL"
+HealthImpact[grep("avalanc", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"AVALANCHE"
+HealthImpact[grep("tropical storm", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"TROPICAL STORM"
+HealthImpact[grep("surge", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"STORM SURGE/TIDE"
+HealthImpact[grep("surf", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HIGH SURF"
+
+as.data.frame(table(HealthImpact$EVTYPE))
+``` 
+  
+  Now we have 49 different event types, much closer to the 48 we would expect, even though some types of events do not appear on the official list.
+  
+  
+### Total Casualties
+
+  In order to evaluate the impact of different types of severe weather on population health, we will compute the total number of casualties as the sum of the number of fatalities and injuries.
+  
+```{r}
+HealthImpact$CASUALTIES<-HealthImpact$INJURIES+HealthImpact$FATALITIES
+```
+
+### Economic Impact Data
+  
+  Now let's analyze the structure and summary of the economic impact subset data that will be used:
+  
+```{r}
+str(EconomicImpact)
+
+summary(EconomicImpact)
+```
+  
+  For the Health Impact data:
+  
+  - We now have 245.031 observations, or severe weather events, with an estimated value of damages in properties or crops.
+  
+  - These severe weather events were observed between 1950-01-03 and 2011-11-30.
+  
+  - We do not have any missing values.  
+  
+  - The EVTYPE (event type) column has 431 levels, when it should have only 48 according to the table of events in the documentation.
+  
+  - The PROPDMGEXP and CROPDMGEXP columns have 16 and 8 levels respectively while we expected a much lower number since these suffixes should stand for Billions, Millions or Thousands of dollars.
+  
+  
+### Event Types in Economic Impact Data
+
+  Let's explore the types of events types in our Health Impact data.
+  
+```{r}
+as.data.frame(table(EconomicImpact$EVTYPE))
+``` 
+  
+  We can see that we have 431 different types of events, instead of 48, because of: 
+  
+  - Mistypings
+  
+  - Use of upper and lower cases
+  
+  - Failure to use the standard
+  
+  
+  We will attempt to impprove the data by applying the same conversions we applied to the Health Impact Data:
+  
+  - Converting type to upper case
+  
+  - Convert to HURRICANE any event type which contains TYPHOON or HURRICANE
+  
+  - Convert to TORNADO any event type which contains TORNADO
+  
+  - Convert to LIGHTNING any event type which contains LIGHTN
+  
+  - Convert to THUNDERSTORM any event type which contains THUNDER or TSTM
+  
+  - Convert to FLOOD any event type which contains FLOOD
+  
+  - Convert to HEAT any event type which contains HEAT
+  
+  - Convert to WILDFIRE any event type which contains FIRE
+  
+  - Convert to ICE STORM any event type which contains ICE
+  
+  - Convert to COLD any event type which contains COLD
+  
+  
+```{r}
+HealthImpact$EVTYPE<-toupper(HealthImpact$EVTYPE)
+HealthImpact[grep("hurricane", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HURRICANE"
+HealthImpact[grep("typho", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HURRICANE"
+HealthImpact[grep("tornado", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"TORNADO"
+HealthImpact[grep("lightn", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"LIGHTNING"
+HealthImpact[grep("thunder", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"THUNDERSTORM"
+HealthImpact[grep("tstm", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"THUNDERSTORM"
+HealthImpact[grep("flood", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"FLOOD"
+HealthImpact[grep("fld", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"FLOOD"
+HealthImpact[grep("heat", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HEAT"
+HealthImpact[grep("fire", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"WILDFIRE"
+HealthImpact[grep("ice", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"ICE STORM"
+HealthImpact[grep("icy", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"ICE STORM"
+HealthImpact[grep("cold", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"COLD"
+HealthImpact[grep("chill", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"COLD"
+HealthImpact[grep("therm", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"COLD"
+HealthImpact[grep("low temp", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"COLD"
+HealthImpact[grep("rip cur", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"RIP CURRENT"
+HealthImpact[grep("snow", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HEAVY SNOW"
+HealthImpact[grep("warm", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HEAT"
+HealthImpact[grep("slide", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"DEBRIS FLOW"
+HealthImpact[grep("rain", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HEAVY RAIN"
+HealthImpact[grep("freez", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"FROST FREEZE"
+HealthImpact[grep("frost", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"FROST FREEZE"
+HealthImpact[grep("wind", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"STRONG/HIGH WIND"
+HealthImpact[grep("wint", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"WINTER STORM/WEATHER"
+HealthImpact[grep("hail", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HAIL"
+HealthImpact[grep("avalanc", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"AVALANCHE"
+HealthImpact[grep("tropical storm", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"TROPICAL STORM"
+HealthImpact[grep("surge", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"STORM SURGE/TIDE"
+HealthImpact[grep("surf", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HIGH SURF"
+
+as.data.frame(table(HealthImpact$EVTYPE))
+``` 
+  
+  Now we have 49 different event types, much closer to the 48 we would expect, even though some types of events do not appear on the official list.
+
+### Adjusting the Magnitude Suffixes
+
+  As we saw, the PROPDMGEXP and CROPDMGEXP (magnitude of PROPDMG and CROPDMG) columns have 16 and 8 levels respectively, which are numbers larger than we would expect. 
+  
+  We expected to have the following suffixes:
+  
+  - **B** for billions of dollars
+  
+  - **M** for millions of dollars
+  
+  - **K** for thousands of dollars
+  
+  We need than to take a further look into those suffixes.
+  
+  Let's create a table with the different suffixes found for PROPDMGEXP and CROPDMGEXP, when the values of PROPDMG and CROPDMG that are greater than zero: 
+  
+```{r}
+# Data for PROPDMG
+x<-table(StormData$PROPDMGEXP, StormData$PROPDMG > 0)
+dimnames(x)[[2]]<-c("PROPDMG=0","PROPDMG>0")
+x
+
+# Data for CROPDMG
+y<-table(StormData$CROPDMGEXP, StormData$CROPDMG > 0)
+dimnames(y)[[2]]<-c("CROPDMG=0","CROPDMG>0")
+y
+```
+
+
+### Adjusting Types of Events
+
+  The number of event types present in the data (488) is much larger than what is described in the documentation, so we need to take a further look into it to 
+  
+  
 ### Preprocessing the data
 
 In order to be able to work with date and time functions to aggregate and plot the data, a new variable, calles `datetime` will be created in the `activity` data frame with the date & time of each of the 5 minutes intervals, in the POSIXct format:
 
 ```{r}
-activity$datetime<-as.POSIXct(strptime(paste(activity$date, formatC(activity$interval, width=4, flag="0")), "%Y-%m-%d %H%M"))
+#activity$datetime<-as.POSIXct(strptime(paste(activity$date, formatC(activity$interval, width=4, flag="0")), "%Y-%m-%d %H%M"))
 ```
 
 
@@ -102,44 +380,6 @@ activity$datetime<-as.POSIXct(strptime(paste(activity$date, formatC(activity$int
 
 For this part of the assignment we will:
   
-1. Make a histogram of the total number of steps taken each day
-  
-2. Calculate and report the mean and median total number of steps taken per day
-   
-In order to answer this question, we will create a new variable, called `stepsperday`, with the sum of the number of steps taken each day, being careful to:  
-- Use the correct time zone (defult is UTC), and   
-- Keep missing values so we can compute the mean correctly with the `mean` function with the parameter `na.rm=TRUE`.  
-
-```{r}
-stepsperday<-aggregate(activity$steps, by=list(as.Date(activity$datetime, tz="")), FUN=sum, na.rm=F)
-
-names(stepsperday)<-c("Date", "Steps")
-```
-
-
-Let's view in a bar chart the total steps taken each day:
-
-```{r fig.width=11}
-library(ggplot2)
-h<-ggplot(stepsperday, aes(Date, Steps))+geom_bar(stat="identity")
-print(h)
-```
-
-
-Let's calculate the mean and meadian of total number of steps taken each day:
-
-```{r}
-Mean <- as.integer(mean(stepsperday$Steps, na.rm=TRUE))
-
-Median <- as.integer(median(stepsperday$Steps, na.rm=TRUE))
-
-Mean
-Median
-```
-
->   
->The daily mean of total steps taken is `r Mean` and the median is `r Median`!
->   
 
 ### Impact in the Economy
 
@@ -149,181 +389,3 @@ For this part of the assigment, we will:
 
 1. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
-### Plot of average number of steps for each interval
-
-First we will create a new data frame called `stepsperinterval` with the aggregate of the mean of the `activity$steps`, by `activity$interval` converted into a date format with the same date.
-
-```{r}
-Time<-as.POSIXct(strptime(formatC(activity$interval, width=4, flag="0"), "%H%M"))
-stepsperinterval<-aggregate(activity$steps, by=list(Time), FUN=mean, na.rm=TRUE) 
-names(stepsperinterval)<-c("Time", "Steps")
-```
-
-Now let's plot the `stepsperinterval` data:
-
-```{r fig.width=11}
-library(ggplot2)
-library(scales)
-p<-ggplot(stepsperinterval, aes(Time, Steps))+geom_line()+scale_x_datetime(labels=date_format("%H:%M"))
-print(p)
-```
-
-### Interval with largest number of steps
-
-For the second question of this part of the assignment:
-
-```{r}
-Time <- strftime(stepsperinterval[order(stepsperinterval$Steps, decreasing=TRUE),][1,1], "%H:%M")
-MaxSteps <- stepsperinterval[order(stepsperinterval$Steps, decreasing=TRUE),][1,2]
-
-stepsperinterval[order(stepsperinterval$Steps, decreasing=TRUE),][1,]
-```
-   
-   
->     
->We can see that the 5-minute interval, on average across all the days in the dataset, that contains the maximum number of steps is `r Time` with an average number of steps of `r MaxSteps`!      
->         
-   
-         
-## Imputing missing values
-
-For this part of the assignment we shall:
-   
-1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
-
-1. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
-
-2. Create a new dataset that is equal to the original dataset but with the missing data filled in.
-
-3. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
-   
-
-### Missing values
-
-Exploring the `activity` data loaded with the `summary` function:
-
-```{r}
-summary(activity)
-
-MissValues<-sum(is.na(activity$steps))
-```
-  
-  
-> We can see that the **steps** variable has missing values with a total of **`r MissValues`**.
-  
-  
-Let's analyze how the **steps** variable missing data is distributed by date: 
-
-```{r}
-table(activity$date, is.na(activity$steps))
-```
-
-We can see that we have 288 measurements each day, since there are 12 x 5 minutes intervals in an hour and 288 x 5 minutes intervals in a day.  
-From a total of 61 days with steps measurements, we have data missing from 8 whole days. The other days have complete steps measurements.  
-The days that do not have measurements are:
-
-```{r}
-unique(activity[is.na(activity$steps),2])
-```
-
-### Filling missing values and creating a new dataset
-
-We will fill the missing values for the number os steps taken with the **mean of the interval**.
-
-Let's aggregate the `activity` dataset into `stepsperinterval` variable by interval.  
-
-```{r}
-stepsperinterval<-aggregate(activity$steps, by=list(activity$interval), FUN=mean, na.rm=TRUE) 
-names(stepsperinterval)<-c("interval", "avgsteps")
-```
-
-Now let's create the `activity2` dataset as the merger of `activity` and `stepsperinterval` dataset by the `interval` value, and move the `avgsteps` values to the missing `interval` values.
-
-```{r}
-activity2<-merge(activity, stepsperinterval)
-nulls<-is.na(activity2$steps)
-activity2[nulls,]$steps<-activity2[nulls,]$avgsteps
-```
-
-### Analysing the new dataset
-
-Let's redo the calculations using the new dataset:
-
-```{r}
-stepsperday2<-aggregate(activity2$steps, by=list(as.Date(activity2$datetime, tz="")), FUN=sum, na.rm=F)
-
-names(stepsperday2)<-c("Date", "Steps")
-```
-
-
-Let's view in a bar chart the total steps taken each day:
-
-```{r fig.width=11}
-library(ggplot2)
-h<-ggplot(stepsperday2, aes(Date, Steps))+geom_bar(stat="identity")
-print(h)
-```
-
-
-
-Let's calculate the mean and meadian of total number of steps taken each day:
-
-```{r}
-Mean2 <- as.integer(mean(stepsperday2$Steps, na.rm=TRUE))
-
-Median2 <- as.integer(median(stepsperday2$Steps, na.rm=TRUE))
-
-Mean2
-Median2
-```
-
->   
->The new daily mean of total steps taken is `r Mean2` while the old one was `r Mean`,  and the new median is `r Median2` while the old one is `r Median`!   
->**So the data we have filled in for the missing values did not make a considerable impact in the mean and median of the total number of steps taken each day!**
->   
-
-
-## Are there differences in activity patterns between weekdays and weekends?
-
-For this part of the assignment, we will use the dataset with the filled-in missing values (`activity2`) to:
-
-1. Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
-
-2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
-
-### New variable
-
-We will create a factor variable called `weekday` in the `activity2` data set with the following code:
-
-```{r}
-## Variable with the day of the week
-activity2$dayoftheweek<-weekdays(activity2$datetime, abbreviate=TRUE)
-
-## Data frame with the day of the week and if it is a weekday or a weekend
-dayoftheweek<-c("Mon","Tue","Wed","Thu","Fri","Sat","Sun")
-weekday<-c("weekday","weekday","weekday","weekday","weekday","weekend","weekend")
-w<-as.data.frame(cbind(dayoftheweek, weekday))
-
-## Merge w to activity2 after fixing bug in R with 2012-10-21 datetime.
-activity2[is.na(activity2$dayoftheweek),]$dayoftheweek<-c("Sun") # bug fix
-activity2<-merge(activity2, w)
-```
-
-### Plot comparing average steps on weekdays and weekends
-
-Create an aggregate dataset from `activity2` with the mean of the number of steps by interval and by the factor weekday: 
-
-```{r}
-stepsperinterval2<-aggregate(activity2$steps, by=list(activity2$interval, activity2$weekday), FUN=mean, na.rm=TRUE) 
-names(stepsperinterval2)<-c("Interval", "weekday", "Steps")
-```
-
-Now let's plot this dataset:
-
-```{r fig.width=11}
-library(lattice)
-xyplot(Steps ~ Interval | weekday, data=stepsperinterval2, layout=c(1,2), type="l")
-```
-  
-  
-> **Apparently during the weekends more steps are taken after around 10 AM, while during week days there are more steps taken between 8AM and 10AM!** 
