@@ -294,44 +294,50 @@ as.data.frame(table(EconomicImpact$EVTYPE))
   
   
 ```{r}
-HealthImpact$EVTYPE<-toupper(HealthImpact$EVTYPE)
-HealthImpact[grep("hurricane", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HURRICANE"
-HealthImpact[grep("typho", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HURRICANE"
-HealthImpact[grep("tornado", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"TORNADO"
-HealthImpact[grep("lightn", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"LIGHTNING"
-HealthImpact[grep("thunder", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"THUNDERSTORM"
-HealthImpact[grep("tstm", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"THUNDERSTORM"
-HealthImpact[grep("flood", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"FLOOD"
-HealthImpact[grep("fld", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"FLOOD"
-HealthImpact[grep("heat", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HEAT"
-HealthImpact[grep("fire", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"WILDFIRE"
-HealthImpact[grep("ice", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"ICE STORM"
-HealthImpact[grep("icy", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"ICE STORM"
-HealthImpact[grep("cold", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"COLD"
-HealthImpact[grep("chill", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"COLD"
-HealthImpact[grep("therm", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"COLD"
-HealthImpact[grep("low temp", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"COLD"
-HealthImpact[grep("rip cur", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"RIP CURRENT"
-HealthImpact[grep("snow", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HEAVY SNOW"
-HealthImpact[grep("warm", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HEAT"
-HealthImpact[grep("slide", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"DEBRIS FLOW"
-HealthImpact[grep("rain", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HEAVY RAIN"
-HealthImpact[grep("freez", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"FROST FREEZE"
-HealthImpact[grep("frost", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"FROST FREEZE"
-HealthImpact[grep("wind", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"STRONG/HIGH WIND"
-HealthImpact[grep("wint", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"WINTER STORM/WEATHER"
-HealthImpact[grep("hail", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HAIL"
-HealthImpact[grep("avalanc", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"AVALANCHE"
-HealthImpact[grep("tropical storm", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"TROPICAL STORM"
-HealthImpact[grep("surge", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"STORM SURGE/TIDE"
-HealthImpact[grep("surf", HealthImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HIGH SURF"
+EconomicImpact$EVTYPE<-toupper(EconomicImpact$EVTYPE)
+EconomicImpact[grep("hurricane", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HURRICANE"
+EconomicImpact[grep("typho", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HURRICANE"
+EconomicImpact[grep("tornado", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"TORNADO"
+EconomicImpact[grep("torndao", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"TORNADO"
+EconomicImpact[grep("lighting", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"LIGHTNING"
+EconomicImpact[grep("lightn", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"LIGHTNING"
+EconomicImpact[grep("lignt", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"LIGHTNING"
+EconomicImpact[grep("thunder", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"THUNDERSTORM"
+EconomicImpact[grep("tstm", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"THUNDERSTORM"
+EconomicImpact[grep("flood", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"FLOOD"
+EconomicImpact[grep("fld", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"FLOOD"
+EconomicImpact[grep("urban", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"FLOOD"
+EconomicImpact[grep("heat", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HEAT"
+EconomicImpact[grep("fire", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"WILDFIRE"
+EconomicImpact[grep("ice", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"ICE STORM"
+EconomicImpact[grep("icy", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"ICE STORM"
+EconomicImpact[grep("cold", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"COLD"
+EconomicImpact[grep("chill", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"COLD"
+EconomicImpact[grep("therm", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"COLD"
+EconomicImpact[grep("low temp", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"COLD"
+EconomicImpact[grep("rip cur", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"RIP CURRENT"
+EconomicImpact[grep("snow", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HEAVY SNOW"
+EconomicImpact[grep("warm", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HEAT"
+EconomicImpact[grep("slide", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"DEBRIS FLOW"
+EconomicImpact[grep("rain", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HEAVY RAIN"
+EconomicImpact[grep("precip", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HEAVY RAIN"
+EconomicImpact[grep("shower", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HEAVY RAIN"
+EconomicImpact[grep("freez", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"FROST FREEZE"
+EconomicImpact[grep("frost", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"FROST FREEZE"
+EconomicImpact[grep("wind", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"STRONG/HIGH WIND"
+EconomicImpact[grep("wint", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"WINTER STORM/WEATHER"
+EconomicImpact[grep("hail", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HAIL"
+EconomicImpact[grep("avalanc", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"AVALANCHE"
+EconomicImpact[grep("tropical storm", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"TROPICAL STORM"
+EconomicImpact[grep("surge", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"STORM SURGE/TIDE"
+EconomicImpact[grep("surf", EconomicImpact$EVTYPE, ignore.case = TRUE, value=FALSE),2]<-"HIGH SURF"
 
-as.data.frame(table(HealthImpact$EVTYPE))
+as.data.frame(table(EconomicImpact$EVTYPE))
 ``` 
   
-  Now we have 49 different event types, much closer to the 48 we would expect, even though some types of events do not appear on the official list.
+  Now we have 65 different event types, much closer to the 48 we would expect, even though some types of events do not appear on the official list.
 
-### Adjusting the Magnitude Suffixes
+### Adjusting Damages for the Magnitude Suffixes
 
   As we saw, the PROPDMGEXP and CROPDMGEXP (magnitude of PROPDMG and CROPDMG) columns have 16 and 8 levels respectively, which are numbers larger than we would expect. 
   
@@ -343,34 +349,68 @@ as.data.frame(table(HealthImpact$EVTYPE))
   
   - **K** for thousands of dollars
   
-  We need than to take a further look into those suffixes.
+  We need than to take a closer look at those suffixes.
   
   Let's create a table with the different suffixes found for PROPDMGEXP and CROPDMGEXP, when the values of PROPDMG and CROPDMG that are greater than zero: 
   
 ```{r}
 # Data for PROPDMG
-x<-table(StormData$PROPDMGEXP, StormData$PROPDMG > 0)
+x<-table(EconomicImpact$PROPDMGEXP, EconomicImpact$PROPDMG > 0)
 dimnames(x)[[2]]<-c("PROPDMG=0","PROPDMG>0")
 x
 
 # Data for CROPDMG
-y<-table(StormData$CROPDMGEXP, StormData$CROPDMG > 0)
+y<-table(EconomicImpact$CROPDMGEXP, EconomicImpact$CROPDMG > 0)
 dimnames(y)[[2]]<-c("CROPDMG=0","CROPDMG>0")
 y
 ```
 
 
-### Adjusting Types of Events
-
-  The number of event types present in the data (488) is much larger than what is described in the documentation, so we need to take a further look into it to 
+  In order to compute the damage values correctly, we will create two new columns in the EconomicImpact dataset with a numeric value corresponding to the suffixes of PROPDMGEXP and CROPDMGEXP, in order to bring all damage values to the thousands of dollars unit, as follows:
   
+  - **B**: billions of dollars, multiply by 1,000,000
   
-### Preprocessing the data
-
-In order to be able to work with date and time functions to aggregate and plot the data, a new variable, calles `datetime` will be created in the `activity` data frame with the date & time of each of the 5 minutes intervals, in the POSIXct format:
-
+  - **M** or **m**: millions of dollars, multiply by 1,000
+  
+  - **K** or **k**: thousands of dollars, multiply by 1
+  
+  - **Everything else**: thousands of dollars, multiply by 1
+  
 ```{r}
-#activity$datetime<-as.POSIXct(strptime(paste(activity$date, formatC(activity$interval, width=4, flag="0")), "%Y-%m-%d %H%M"))
+# Create columns and initialize with 1
+EconomicImpact$PROPDMGEXPVALUE<-1.0
+EconomicImpact$CROPDMGEXPVALUE<-1.0
+
+# For suffix B
+EconomicImpact[EconomicImpact$PROPDMGEXP == "B", 8] <- 1000000.0
+EconomicImpact[EconomicImpact$CROPDMGEXP == "B", 9] <- 1000000.0
+
+# For suffix M or m
+EconomicImpact[EconomicImpact$PROPDMGEXP %in% c("M", "m"), 8] <- 1000.0
+EconomicImpact[EconomicImpact$CROPDMGEXP %in% c("M", "m"), 9] <- 1000.0
+```
+  
+  Let's verify if the values are correct:
+  
+```{r}
+# Property Damages:
+as.data.frame(table(EconomicImpact$PROPDMGEXP))
+table(EconomicImpact$PROPDMGEXP, EconomicImpact$PROPDMGEXPVALUE)
+
+# Crop Damages:
+as.data.frame(table(EconomicImpact$CROPDMGEXP))
+table(EconomicImpact$CROPDMGEXP, EconomicImpact$CROPDMGEXPVALUE)
+```
+  
+  We can see that the number of elements for each suffix and its corresponding value is correct!
+  
+  
+### Total damages
+  
+  A new column in the EconomicImpact data frames will be created with the sum of the estimated values of property damages and crop damages in thousands of dollars:
+  
+```{r}
+EconomicImpact$TOTALDMG <- EconomicImpact$PROPDMG*EconomicImpact$PROPDMGEXPVALUE + EconomicImpact$CROPDMG*EconomicImpact$CROPDMGEXPVALUE
 ```
 
 
@@ -378,14 +418,35 @@ In order to be able to work with date and time functions to aggregate and plot t
 
 ### Impact in Population Health
 
-For this part of the assignment we will:
+We will aggregate the total number of casualties by type of severe weather event:
+
+```{r fig.width=10}
+TotalHealthImpact <- aggregate(HealthImpact$CASUALTIES, by=list(HealthImpact$EVTYPE), FUN=sum)
+names(TotalHealthImpact) <- c("EVTYPE", "CASUALTIES")
+x<-TotalHealthImpact[order(TotalHealthImpact$CASUALTIES, decreasing = TRUE),]
+x
+
+barplot(x[1:5, 2], names.arg=x[1:5, 1], ylab="Number of Casualties (Injuries + Fatalities)", cex.names=0.8, cex.axis=0.7, main="Most Impacting Weather Events in US Population Health from 1950 to 2011")
+```
+  
+  A total of **`r as.integer(sum(TotalHealthImpact$CASUALTIES))`** people were killed or injured due to severe weather events in the United States from January, 1950 to November, 2011.
+  
+  **Tornados** had the largest impact in US population health, with more than 97 thousands casualties from 1950 to 2011, distantly followed by **heat waves**, **thunderstorms**, **floods** and **lightning**.  
   
 
 ### Impact in the Economy
 
-For this part of the assigment, we will:
+We will aggregate the total estimate value of property and crops damage by the type of severe weather event:
 
-1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+```{r fig.width=10}
+TotalEconomicImpact <- aggregate(EconomicImpact$TOTALDMG, by=list(EconomicImpact$EVTYPE), FUN=sum)
+names(TotalEconomicImpact) <- c("EVTYPE", "TOTALDMG")
+y<-TotalEconomicImpact[order(TotalEconomicImpact$TOTALDMG, decreasing = TRUE),]
+y
 
-1. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
-
+barplot(y[1:5, 2]/1000000, names.arg=y[1:5, 1], ylab="Total Value of Damages (Billions of US$)", cex.names=0.8, cex.axis=0.8, main="Most Impacting Weather Events in the US Economy from 1950 to 2011")
+```
+  
+  A total of **US$`r as.integer(sum(TotalEconomicImpact$TOTALDMG)/1000000)` Billions** were lost due to damages to properties and crops caused by severe weather events in the United States from January, 1950 to November, 2011.
+  
+  **Floods** had the largest economic impact, with damagens of almost US$ 180 billions  from 1950 to 2011, followed by **hurricanes**, **tornados**, **storm surges/tide** and **hail**. 
